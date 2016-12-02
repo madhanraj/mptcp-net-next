@@ -448,11 +448,11 @@ out:
 }
 
 
-int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
-		       struct flowi *fl,
-		       struct request_sock *req,
-		       struct tcp_fastopen_cookie *foc,
-		       bool attach_req)
+static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
+			      struct flowi *fl,
+			      struct request_sock *req,
+			      struct tcp_fastopen_cookie *foc,
+			      bool attach_req)
 {
 	struct inet_request_sock *ireq = inet_rsk(req);
 	struct ipv6_pinfo *np = inet6_sk(sk);
@@ -478,8 +478,6 @@ int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
 		err = ip6_xmit(sk, skb, fl6, rcu_dereference(np->opt),
 			       np->tclass);
 		err = net_xmit_eval(err);
-		if (!tcp_rsk(req)->snt_synack && !err)
-			tcp_rsk(req)->snt_synack = tcp_time_stamp;
 	}
 
 done:
