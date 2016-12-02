@@ -1881,13 +1881,7 @@ int mptcp_create_master_sk(struct sock *meta_sk, __u64 remote_key,
 		goto err_add_sock;
 
 	meta_sk->sk_prot->unhash(meta_sk);
-
-	if (master_sk->sk_family == AF_INET || mptcp_v6_is_v4_mapped(master_sk))
-		__inet_hash_nolisten(master_sk, NULL);
-#if IS_ENABLED(CONFIG_IPV6)
-	else
-		__inet_hash(master_sk, NULL);
-#endif
+	inet_ehash_nolisten(master_sk, NULL);
 
 	master_tp->mptcp->init_rcv_wnd = master_tp->rcv_wnd;
 
