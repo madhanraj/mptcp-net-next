@@ -416,11 +416,6 @@ void tcp_set_skb_tso_segs(struct sk_buff *skb, unsigned int mss_now);
 
 void tcp_v4_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
 			   struct request_sock *req);
-int tcp_v4_send_synack(struct sock *sk, struct dst_entry *dst,
-		       struct flowi *fl,
-		       struct request_sock *req,
-		       u16 queue_mapping,
-		       struct tcp_fastopen_cookie *foc);
 void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb);
 struct sock *tcp_v4_cookie_check(struct sock *sk, struct sk_buff *skb);
 void tcp_v4_reqsk_destructor(struct request_sock *req);
