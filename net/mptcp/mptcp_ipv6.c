@@ -229,7 +229,7 @@ int mptcp_v6_do_rcv(struct sock *meta_sk, struct sk_buff *skb)
 	    mpcb->infinite_mapping_rcv || mpcb->send_infinite_mapping)
 		goto reset_and_discard;
 
-	child = tcp_v6_hnd_req(meta_sk, skb);
+	child = tcp_v6_cookie_check(meta_sk, skb);
 
 	if (!child)
 		goto discard;
@@ -240,7 +240,7 @@ int mptcp_v6_do_rcv(struct sock *meta_sk, struct sk_buff *skb)
 		 * already the meta-sk-lock and are sure that it is not owned
 		 * by the user.
 		 */
-		ret = tcp_rcv_state_process(child, skb, tcp_hdr(skb), skb->len);
+		ret = tcp_rcv_state_process(child, skb);
 		bh_unlock_sock(child);
 		sock_put(child);
 		if (ret) {

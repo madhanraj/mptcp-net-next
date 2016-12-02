@@ -155,7 +155,7 @@ struct request_sock_ops mptcp_request_sock_ops __read_mostly = {
 	.syn_ack_timeout =	tcp_syn_ack_timeout,
 };
 
-/* Similar to tcp_v4_conn_request */
+/* Similar to: tcp_v4_conn_request */
 static int mptcp_v4_join_request(struct sock *meta_sk, struct sk_buff *skb)
 {
 	return tcp_conn_request(&mptcp_request_sock_ops,
@@ -163,7 +163,9 @@ static int mptcp_v4_join_request(struct sock *meta_sk, struct sk_buff *skb)
 				meta_sk, skb);
 }
 
-/* We only process join requests here. (either the SYN or the final ACK) */
+/* Similar to: tcp_v4_do_rcv
+ * We only process join requests here. (either the SYN or the final ACK)
+ */
 int mptcp_v4_do_rcv(struct sock *meta_sk, struct sk_buff *skb)
 {
 	const struct mptcp_cb *mpcb = tcp_sk(meta_sk)->mpcb;
@@ -214,18 +216,17 @@ int mptcp_v4_do_rcv(struct sock *meta_sk, struct sk_buff *skb)
 	    mpcb->infinite_mapping_rcv || mpcb->send_infinite_mapping)
 		goto reset_and_discard;
 
-	child = tcp_v4_hnd_req(meta_sk, skb);
+	child = tcp_v4_cookie_check(meta_sk, skb);
 
 	if (!child)
 		goto discard;
-
 	if (child != meta_sk) {
 		sock_rps_save_rxhash(child, skb);
 		/* We don't call tcp_child_process here, because we hold
 		 * already the meta-sk-lock and are sure that it is not owned
 		 * by the user.
 		 */
-		ret = tcp_rcv_state_process(child, skb, tcp_hdr(skb), skb->len);
+		ret = tcp_rcv_state_process(child, skb);
 		bh_unlock_sock(child);
 		sock_put(child);
 		if (ret) {
